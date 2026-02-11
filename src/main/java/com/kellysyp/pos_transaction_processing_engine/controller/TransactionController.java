@@ -7,6 +7,7 @@ import com.kellysyp.pos_transaction_processing_engine.repository.TransactionRepo
 import com.kellysyp.pos_transaction_processing_engine.service.AuthorizationResult;
 import com.kellysyp.pos_transaction_processing_engine.service.AuthorizationService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,29 +48,62 @@ public class TransactionController {
         );
     }
 
-    @PostMapping("/payments")
-    public ResponseEntity<PaymentResponse> processPayment(@Valid @RequestBody PaymentRequest request) {
+    @PostMapping("/process")
+    public ResponseEntity<PaymentResponse> processPayment(@RequestBody PaymentRequest request) {
 
-        AuthorizationResult result = authorizationService.authorize(
-                request.getAmount(),
-                request.getBin()
-        );
+        PaymentResponse response = new PaymentResponse();
 
-        Transaction transaction = new Transaction();
-        transaction.setAmount(request.getAmount());
-        transaction.setBin(request.getBin());
-        transaction.setStatus(result.getStatus());
-        transaction.setCurrency(request.getCurrency());
+        try {
 
-        Transaction saved = transactionRepository.save(transaction);
+            // 1️⃣ Validate card
+            if (request.getCardNumber() == null || request.getCardNumber().length() < 12) {
+                response.setStatus("DECLINED");
+                response.setMessage("Invalid Card");
+                return ResponseEntity.badRequest().body(response);
+            }
 
-        PaymentResponse response = new PaymentResponse(
-                saved.getTransactionId(),
-                result.getStatus(),
-                result.getResponseCode()
-        );
+            // 2️⃣ Forced test scenarios
+            if (request.getTestScenario() != null) {
 
-        return ResponseEntity.ok(response);
+                switch (request.getTestScenario()) {
+
+                    case "INSUFFICIENT_FUNDS":
+                        response.setStatus("DECLINED");
+                        response.setMessage("Insufficient Funds");
+                        return ResponseEntity.ok(response);
+
+                    case "INVALID_CARD":
+                        response.setStatus("DECLINED");
+                        response.setMessage("Invalid Card");
+                        return ResponseEntity.ok(response);
+
+                    case "TIMEOUT":
+                        Thread.sleep(5000); // simulate delay
+                        throw new RuntimeException("Gateway Timeout");
+
+                    default:
+                        break;
+                }
+            }
+
+            // 3️⃣ Random decline simulation (10% insufficient funds)
+            if (Math.random() < 0.1) {
+                response.setStatus("DECLINED");
+                response.setMessage("Insufficient Funds");
+                return ResponseEntity.ok(response);
+            }
+
+            // 4️⃣ Otherwise approve
+            response.setStatus("APPROVED");
+            response.setMessage("Transaction Approved");
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.setStatus("ERROR");
+            response.setMessage("System Error: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 
 }

@@ -7,12 +7,15 @@ import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 
 public class PaymentRequest {
+
     @NotBlank(message = "cardNumber is required")
     private String cardNumber;
 
     @NotNull(message = "amount is required")
     @Positive(message = "amount must be greater than 0")
     private BigDecimal amount;
+
+    private String testScenario; // "INSUFFICIENT_FUNDS", "INVALID_CARD", "TIMEOUT"
 
     @NotBlank(message = "storeId is required")
     private String storeId;
@@ -62,4 +65,13 @@ public class PaymentRequest {
     public void setCurrency(String currency) {
         this.currency = currency;
     }
+
+    public String getTestScenario() {
+        return testScenario;
+    }
+
+    public void setTestScenario(String testScenario) {
+        this.testScenario = testScenario;
+    }
+
 }
