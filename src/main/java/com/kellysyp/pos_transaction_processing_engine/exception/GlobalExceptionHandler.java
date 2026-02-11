@@ -26,4 +26,11 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(errors);
     }
+
+
+    public class PaymentDeclinedException extends RuntimeException {
+        public PaymentDeclinedException(String message) {
+            super(message);
+        }
+    }
 }

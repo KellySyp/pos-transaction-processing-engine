@@ -17,6 +17,12 @@ public class PaymentRequest {
     @NotBlank(message = "storeId is required")
     private String storeId;
 
+    @NotNull (message = "BIN is required")
+    private String bin;
+
+    @NotNull (message = "currency is required")
+    private String currency;
+
     public String getCardNumber() {
         return cardNumber;
     }
@@ -39,5 +45,21 @@ public class PaymentRequest {
 
     public void setStoreId(String storeId) {
         this.storeId = storeId;
+    }
+
+    public String getBin() {
+        return bin;
+    }
+
+    public void setBin(String bin) {
+        this.bin = bin;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 }

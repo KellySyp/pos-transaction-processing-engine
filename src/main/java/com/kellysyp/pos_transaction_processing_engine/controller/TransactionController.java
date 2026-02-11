@@ -4,6 +4,8 @@ import com.kellysyp.pos_transaction_processing_engine.dto.PaymentRequest;
 import com.kellysyp.pos_transaction_processing_engine.dto.PaymentResponse;
 import com.kellysyp.pos_transaction_processing_engine.model.Transaction;
 import com.kellysyp.pos_transaction_processing_engine.repository.TransactionRepository;
+import com.kellysyp.pos_transaction_processing_engine.service.AuthorizationResult;
+import com.kellysyp.pos_transaction_processing_engine.service.AuthorizationService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +19,11 @@ import java.util.UUID;
 public class TransactionController {
 
     private final TransactionRepository transactionRepository;
+    private final AuthorizationService authorizationService;
 
-    public TransactionController(TransactionRepository transactionRepository) {
+    public TransactionController(TransactionRepository transactionRepository, AuthorizationService authorizationService) {
         this.transactionRepository = transactionRepository;
+        this.authorizationService = authorizationService;
     }
 
     @PostMapping
@@ -46,13 +50,23 @@ public class TransactionController {
     @PostMapping("/payments")
     public ResponseEntity<PaymentResponse> processPayment(@Valid @RequestBody PaymentRequest request) {
 
-        // Simulate saving or processing
-        UUID transactionId = UUID.randomUUID();
+        AuthorizationResult result = authorizationService.authorize(
+                request.getAmount(),
+                request.getBin()
+        );
+
+        Transaction transaction = new Transaction();
+        transaction.setAmount(request.getAmount());
+        transaction.setBin(request.getBin());
+        transaction.setStatus(result.getStatus());
+        transaction.setCurrency(request.getCurrency());
+
+        Transaction saved = transactionRepository.save(transaction);
 
         PaymentResponse response = new PaymentResponse(
-                transactionId,
-                "RECEIVED",
-                "Transaction accepted."
+                saved.getTransactionId(),
+                result.getStatus(),
+                result.getResponseCode()
         );
 
         return ResponseEntity.ok(response);
