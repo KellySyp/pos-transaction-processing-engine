@@ -4,39 +4,42 @@ import java.util.UUID;
 
 public class PaymentResponse {
 
-    private UUID transactionId;
-    private String status;
+    private String responseCode;
     private String message;
+    private String transactionId;
 
-    public PaymentResponse() {}
+    // ✅ Required for Spring/Jackson
+    public PaymentResponse() {
+    }
 
-    public PaymentResponse(UUID transactionId, String status, String message) {
-        this.transactionId = transactionId;
-        this.status = status;
+    // ✅ Your custom constructor
+    public PaymentResponse(String responseCode, String message, String transactionId) {
+        this.responseCode = responseCode;
         this.message = message;
-    }
-
-    public UUID getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(UUID transactionId) {
         this.transactionId = transactionId;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public String getResponseCode() {
+        return responseCode;
     }
 
     public String getMessage() {
         return message;
     }
 
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
+    }
+
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 }
