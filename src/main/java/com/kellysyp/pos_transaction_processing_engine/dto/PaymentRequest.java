@@ -25,6 +25,8 @@ public class PaymentRequest {
 
     @NotNull (message = "currency is required")
     private String currency;
+    private String merchantId;
+    private String last4;
 
     public String getCardNumber() {
         return cardNumber;
@@ -73,5 +75,19 @@ public class PaymentRequest {
     public void setTestScenario(String testScenario) {
         this.testScenario = testScenario;
     }
+
+    public String getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(String merchantId) {this.merchantId = merchantId;}
+
+    public String getLast4() {
+        return last4;
+    }
+
+    public void setLast4(String last4) {this.last4 = last4;}
+
+
 
 }

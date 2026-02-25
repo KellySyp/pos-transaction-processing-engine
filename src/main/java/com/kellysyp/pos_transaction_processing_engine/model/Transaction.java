@@ -1,6 +1,8 @@
 package com.kellysyp.pos_transaction_processing_engine.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
@@ -16,6 +18,33 @@ public class Transaction {
     public UUID getTransactionId() {
         return transactionId;
     }
+
+    @Column(nullable = false)
+    private String transactionType;
+
+    @Column(nullable = false)
+    private BigDecimal amount;
+
+    @Column(nullable = false)
+    private String currency;
+
+    @Column(nullable = false)
+    private String merchantId;
+
+    private String terminalId;
+
+    private String bin;
+
+    private String last4;
+
+    @Column(nullable = false)
+    private String status;
+
+    private String responseCode;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private Instant createdAt;
 
     public void setTransactionId(UUID transactionId) {
         this.transactionId = transactionId;
@@ -101,31 +130,4 @@ public class Transaction {
         this.createdAt = createdAt;
     }
 
-    @Column(nullable = false)
-    private String transactionType;
-
-    @Column(nullable = false)
-    private BigDecimal amount;
-
-    @Column(nullable = false)
-    private String currency;
-
-    @Column(nullable = false)
-    private String merchantId;
-
-    private String terminalId;
-
-    private String bin;
-
-    private String last4;
-
-    @Column(nullable = false)
-    private String status;
-
-    private String responseCode;
-
-    @Column(nullable = false)
-    private Instant createdAt = Instant.now();
-
-    // getters/setters will come later
 }
